@@ -31,7 +31,7 @@ class Arbol{
     bool hayCFlip(); // es color flip
 	void rotacionSimple();
 	void rotacionDoble();
-	void recoloreo(); //lo llama cada rotacion
+	void recoloreo(Nodo *); //lo llama cada rotacion
 	void cambioRaiz();
 	void colorFlip();
 	void insertar( const char *);
