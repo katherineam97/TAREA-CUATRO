@@ -12,6 +12,7 @@ class Arbol{
 		char color;
 		Par * par;
 	    Nodo(Par *);
+		~Nodo();
 	    void insertar(Par *);
 		
 	 };
@@ -25,16 +26,17 @@ class Arbol{
 		
 	}
 	
-    Arbol();
+     Arbol();
+	~Arbol();
     int tipoRotacion(); // 2 si es simple 1 si es doble
     bool esRN(); // si es rojo negro no necesita rotar modifique punteros a padre y abuelo
-    bool hayCFlip(); // es color flip
+    bool hayCFlip(Nodo *); // es color flip
 	void rotacionSimple();
 	void rotacionDoble();
 	void recoloreo(Nodo *); //lo llama cada rotacion
 	void cambioRaiz();
-	void colorFlip();
-	void insertar( const char *);
+	void colorFlip(Nodo *);
+	void insertar(const char *);
 	
 	
 }
