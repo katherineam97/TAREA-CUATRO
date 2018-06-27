@@ -19,7 +19,7 @@ class Par {
 	  }
 };
 
-
+//comparar cons copia destructor cargar sobrecargado
 
 
 
