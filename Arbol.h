@@ -2,6 +2,8 @@
 #define _ARBOL
 #include "Par.h"
 #include <vector> // para el iterador
+#include <iostream>
+using namespace std;
 
 template< class T1, class T2 >
 class Arbol{
@@ -16,6 +18,7 @@ class Arbol{
 	 this->par=par;
 	 izq=0;
 	 der=0;
+	 color='\0';
  }
  
  
@@ -33,7 +36,7 @@ class Arbol{
  /**metodo insertar de nodo, crea una llave e inserta el nodo donde corresponde
     @param par
  */
-insertar(Par<T1,T2> * par){
+void insertar(Par<T1,T2> * par){
 		int lado=0;
 	 if(this->par > par){//si el par es mayor entonces va a el lado derecho que se representa con un 1
 		lado=1;	 
@@ -48,7 +51,7 @@ insertar(Par<T1,T2> * par){
 		 der->color='N';//es una hoja por lo que es negra
 		 delete this->par;//el par del padre ahora va a ser el menor que en este caso fue le que recibio de param
 		 this->par=0;
-		 this->par = new Par<T1,T2>(par->getLlave,0);
+		 this->par = new Par<T1,T2>(par->getLlave(),0);
 		 this->color='R';//el padre pasa a ser rojo
 		 
 	 }else if(lado==1 && der){
@@ -68,17 +71,33 @@ insertar(Par<T1,T2> * par){
 	 
 	 
  }
+ 
+ // Metodo que imprime el nodo Pre ORDEN
+ostream& imprimir(ostream& salida){
+	salida << this->par << " ";
+	if(this->izq)		// Chequea si existe el hijo izquierdo
+	{
+		this->izq->imprimir(salida);
+	}
+	if(this->der)		// Chequea si existe el hijo derecho
+	{
+		this->der->imprimir(salida);
+	}
+	return salida;
+}
 		
 	 };
 	 
 	 Nodo * padre;
 	 Nodo * raiz;
+	
 	public:
 	
 	
 	
 Arbol(){
 	raiz=0;
+	padre=0;
 	
 }
 
@@ -138,6 +157,7 @@ int rojosSeguidos(Nodo* nodo){
 }
 
 void buscarPadre(Nodo & hijo){
+	if(hijo!=0){
 	Nodo * aux=raiz;
 	padre= aux;
 	int donde=-1;
@@ -159,6 +179,7 @@ void buscarPadre(Nodo & hijo){
 	}else{
 		rotacionDoble();
 		
+	}
 	}
 	
 }
@@ -190,29 +211,34 @@ void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revis
 void rotacionSimple(Nodo * padre, int lado){
 	if(lado==0){//rotacion izquierda
 
-		padre->der->izq= *(padre->izq->der);
-		padre->izq->izq = new Nodo(padre->izq->par);
-		padre->izq->par->setDato(0);
-		padre->par->setLlave(padre->der->par->getLlave());
-		Nodo * ptr = *(padre->der->der);
+	//IZQUIERDA
+		padre->izq->der= new Nodo(padre->der->izq->par);
+		padre->izq->izq=new Nodo(padre->izq->par);
+		padre->izq->par->setDato(0);//borra el dato de un nodo para que sea una llave
+		padre->par->setLlave(padre->der->par->getLlave());//asigna la llave del hijo al padre
+		Nodo * ptr= *(padre->der->der);
 		padre->der->der=0;
-		delete padre->der;
+		delete padre->der;//  
 		padre->der= *ptr;
-		//cout "Rotacion Simple Izquierda" : arbol
+		//cout "Rotacion Simple iZQUIERDA" : arbol
 		recoloreo(padre);
 		//cout "Recoloreo" :arbol
 		
 		
 	}else{
-		padre->izq->der= *(padre->der->izq);
-		padre->der->der=new Nodo(padre->der->par);
+		padre->der->izq= new Nodo(padre->izq->der->par);
+		padre->der->der = new Nodo(padre->der->par);
+		
 		padre->der->par->setDato(0);
-		padre->der->par->setLlave(padre->der->der->par->getLlave());
-		Nodo * ptr= *(padre->izq->izq);
+		padre->der->par->setLLave(padre->der->izq->par->getLlave());
+		
+		padre->par->setLlave(padre->izq->par->getLlave());
+		
+		Nodo * ptr = *(padre->izq->izq);
 		padre->izq->izq=0;
 		delete padre->izq;
 		padre->izq= *ptr;
-		//cout "Rotacion Simple Derecha" : arbol
+		//cout "Rotacion Simple DERECHA" : arbol
 		recoloreo(padre);
 		//cout "Recoloreo" :arbol
 		
@@ -223,12 +249,13 @@ void rotacionSimple(Nodo * padre, int lado){
 
 /**
 */
-void rotacionDoble(Nodo * padre, int lado){
+void rotacionDoble(Nodo * padre, int lado){//yo izquierdo y mi hijo derecho rojo
+	
 	if(lado==0 && padre->der->color=='R'){
 		rotacionSimple(padre,1);
 		roatcionSimple(padre,0);
 		
-	}else{
+	}else if(lado==1 && padre->izq->color=='R'){
 		rotacionSimple(padre,0);
 		roatcionSimple(padre,1);
 		
@@ -278,11 +305,49 @@ posteriormente crea un par con los datos que recibe del archivo
 llama al insertar de nodo con el mismo, y finaliza revisando si el arbol quedo de tipo rojo negro para relizar las siguientes modificaciones al no serlo
 @param archivo  
 */
-void insertar( const char * Archivo){
+//void insertar( const char * Archivo){
 	
 	
+	
+//}
+
+void insertar(Par<T1,T2> * par){
+	int lado=-1;
+	if(raiz){
+		cambioRaiz();
+		if(raiz->par->getLlave() > par->getLlave()){
+			hayCFlip(raiz->der);
+			lado=1;
+		}else{
+			hayCFlip(raiz->izq);
+			lado=0;
+		}
+		
+		raiz->insertar(par);
+		if(lado){
+			buscarPadre(*(esRN(raiz->der)));
+		}else{
+			buscarPadre(*(esRN(raiz->izq)));
+		}
+		
+		
+		
+	}else{
+		raiz=new Nodo(par);	
+	}
 	
 }
+
+
+// Metodo que imprime el arbol por medio de un operator
+friend ostream& operator<<(ostream& salida, Arbol<T1,T2>& arbol){
+	if(arbol.raiz){
+		arbol.raiz->imprimir(salida);  // Imprimir recursivamente a todo el arbol
+	}
+	return salida;
+}
+
+
 	
 		
 		
