@@ -194,7 +194,6 @@ void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revis
 	if (nodo->izq){
 			colorFlip(nodo);
 			hayCFlip(nodo->izq);
-
 	}
 
 	if (nodo->der){
@@ -320,21 +319,25 @@ llama al insertar de nodo con el mismo, y finaliza revisando si el arbol quedo d
 //}
 
 void insertar(Par<T1,T2> * par){
-	int lado=-1;
+	int lado=0;
 	if(raiz){
 		cambioRaiz();
-		if(raiz->par->getLlave() > par->getLlave()){
+		if(raiz->der && raiz->izq){
+			if(raiz->par->getLlave() > par->getLlave()){
 			hayCFlip(raiz->der);
 			lado=1;
 		}else{
 			hayCFlip(raiz->izq);
-			lado=0;
+			lado=2;
 		}
+
+		}
+	
 		
 		raiz->insertar(par);
-		if(lado){
+		if(lado==1){
 			esRN(raiz->der);
-		}else{
+		}else if(lado==2){
 			esRN(raiz->izq);
 		}
 		
