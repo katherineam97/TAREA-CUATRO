@@ -42,7 +42,7 @@ void insertar(Par<T1,T2> * par){
 		lado=1;	 
 	 }
 	 
-	 if(lado==0 && izq){
+	 if(lado==0 && izq){ 
 		 izq->insertar(par);//en caso de que el para sea menor llama recursivamente hasta encontrar un campo nulo (donde le corresponda) 
 	 }else if(!izq){//insertar en lado izquierdo		
 		 izq=new Nodo(par);//inserta de hijo izq el nuevo par 
@@ -74,7 +74,7 @@ void insertar(Par<T1,T2> * par){
  
  // Metodo que imprime el nodo Pre ORDEN
 ostream& imprimir(ostream& salida){
-	salida << this->par << " ";
+	salida << (*(this->par)) << " ";
 	if(this->izq)		// Chequea si existe el hijo izquierdo
 	{
 		this->izq->imprimir(salida);
@@ -128,9 +128,11 @@ Nodo* esRN(Nodo* nodo){
 	if (nodo->izq!= 0){
 		
 		if(rojosSeguidos(nodo)){
+			buscarPadre(*nodo);
 			return nodo;
 		}else{
 			esRN(nodo->izq);
+
 		}
 		
 		
@@ -138,6 +140,7 @@ Nodo* esRN(Nodo* nodo){
 	
 	if (nodo->der!=0){
 		if(rojosSeguidos(nodo)){
+			buscarPadre(*nodo);
 			return nodo;
 		}else{ 
 		esRN(nodo->der);
@@ -157,7 +160,6 @@ int rojosSeguidos(Nodo* nodo){
 }
 
 void buscarPadre(Nodo & hijo){
-	if(hijo!=0){
 	Nodo * aux=raiz;
 	padre= aux;
 	int donde=-1;
@@ -180,7 +182,6 @@ void buscarPadre(Nodo & hijo){
 		rotacionDoble(padre, donde);
 		
 	}
-	}
 	
 }
 
@@ -189,19 +190,19 @@ void buscarPadre(Nodo & hijo){
 
 void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revisar
 //llama a colorFlip() en caso de que necesite y le pasa el puntero a nodo de donde esta el problema
-   
-	if (nodo->izq!= 0){
+   cout<<"vere si hay Cflip"<<endl;
+	if (nodo->izq){
 			colorFlip(nodo);
 			hayCFlip(nodo->izq);
 
 	}
 
-	if (nodo->der!=0){
+	if (nodo->der){
 		colorFlip(nodo);
 		hayCFlip(nodo->der);
-
 	}
-	
+	 
+	cout<<"salii Cflip"<<endl; 
 }
 
 
@@ -216,10 +217,10 @@ void rotacionSimple(Nodo * padre, int lado){
 		padre->izq->izq=new Nodo(padre->izq->par);
 		padre->izq->par->setDato(0);//borra el dato de un nodo para que sea una llave
 		padre->par->setLlave(padre->der->par->getLlave());//asigna la llave del hijo al padre
-		Nodo * ptr= *(padre->der->der);
+		Nodo * ptr= (padre->der->der);
 		padre->der->der=0;
 		delete padre->der;//  
-		padre->der= *ptr;
+		padre->der= ptr;
 		//cout "Rotacion Simple iZQUIERDA" : arbol
 		recoloreo(padre);
 		//cout "Recoloreo" :arbol
@@ -230,14 +231,14 @@ void rotacionSimple(Nodo * padre, int lado){
 		padre->der->der = new Nodo(padre->der->par);
 		
 		padre->der->par->setDato(0);
-		padre->der->par->setLLave(padre->der->izq->par->getLlave());
+		padre->der->par->setLlave(padre->der->izq->par->getLlave());
 		
 		padre->par->setLlave(padre->izq->par->getLlave());
 		
-		Nodo * ptr = *(padre->izq->izq);
+		Nodo * ptr = (padre->izq->izq);
 		padre->izq->izq=0;
 		delete padre->izq;
-		padre->izq= *ptr;
+		padre->izq= ptr;
 		//cout "Rotacion Simple DERECHA" : arbol
 		recoloreo(padre);
 		//cout "Recoloreo" :arbol
@@ -253,11 +254,11 @@ void rotacionDoble(Nodo * padre, int lado){//yo izquierdo y mi hijo derecho rojo
 	
 	if(lado==0 && padre->der->color=='R'){
 		rotacionSimple(padre,1);
-		roatcionSimple(padre,0);
+		rotacionSimple(padre,0);
 		
 	}else if(lado==1 && padre->izq->color=='R'){
 		rotacionSimple(padre,0);
-		roatcionSimple(padre,1);
+		rotacionSimple(padre,1);
 		
 	}
 	
@@ -274,6 +275,7 @@ void recoloreo(Nodo * padre){
 /** metodo que cambia la raiz si esta es roja
 */
 void cambioRaiz(){
+	cout<<"cambiaree raiz"<<endl;
 	if(raiz->color=='R'){
 	raiz->color='N';
 	}
@@ -282,12 +284,18 @@ void cambioRaiz(){
 /** metodo el cual si encuentra un nodo negro con dos hijos rojos, el nodo negro pasa a ser rojo y sus hijos negros
 */
 void colorFlip(Nodo * nodo){
-	if(nodo->color=='N' && nodo->izq->color=='R' && nodo->der->color=='R'){
-		 	nodo->color='R';
+	cout<<"comprovaree Colorflip"<<endl; 
+	if(nodo->izq && nodo->der){
+		if(nodo->color=='N' && nodo->izq->color=='R' && nodo->der->color=='R'){
+		 
+	     	nodo->color='R';
 			nodo->izq->color='N';
 			nodo->der->color='N'; 
 	}
 	
+	}
+	cout<<"salii Colorflip"<<endl; 
+
 }
 
 int esHoja(Nodo & nodo){
@@ -325,9 +333,9 @@ void insertar(Par<T1,T2> * par){
 		
 		raiz->insertar(par);
 		if(lado){
-			buscarPadre(*(esRN(raiz->der)));
+			esRN(raiz->der);
 		}else{
-			buscarPadre(*(esRN(raiz->izq)));
+			esRN(raiz->izq);
 		}
 		
 		
