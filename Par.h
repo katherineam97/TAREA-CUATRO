@@ -5,7 +5,7 @@
 using namespace std;
 template< class T1, class T2 >
 class Par {
-	friend ostream& operator<<(ostream& salida, Par<T1,T2> par){
+	friend ostream& operator<<(ostream& salida, Par<T1,T2>  par){
 		salida << "("<< par.llave << "," << par.dato<< ")"<< endl;
 		return salida;
 	}
@@ -36,7 +36,8 @@ class Par {
 		  return entrada;
 	  }
 	  
-	  int operator> (const Par<T1,T2> * par){		 
+	  int operator > (const Par<T1,T2> * par){		 
+		  
 		  if(this->llave >= par->llave){
 			  return 1;
 			  
@@ -45,6 +46,12 @@ class Par {
 			  return 0;
 		  }
 	  }
+
+
+        T2 getDato(){
+			return dato;
+			
+		}
 
 		T1 getLlave(){
 			return llave;

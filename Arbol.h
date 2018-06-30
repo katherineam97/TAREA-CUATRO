@@ -15,7 +15,8 @@ class Arbol{
 		char color;
 		Par<T1,T2> * par;
  Nodo(Par<T1,T2> * par){
-	 this->par=par;
+ 	 Par<T1, T2> * copia= new Par<T1, T2>(par->getLlave(),par->getDato());
+	 this->par=copia;
 	 izq=0;
 	 der=0;
 	 color='\0';
@@ -36,15 +37,24 @@ class Arbol{
  /**metodo insertar de nodo, crea una llave e inserta el nodo donde corresponde
     @param par
  */
+int esHoja(Nodo & nodo){
+	if(nodo.der != 0 && nodo.izq != 0){
+		return 0;//no es hoja
+	}else{		
+		return 1;
+	}
+	
+}
+
 void insertar(Par<T1,T2> * par){
 		int lado=0;
-	 if(this->par > par){//si el par es mayor entonces va a el lado derecho que se representa con un 1
-		lado=1;	 
+	 if(par->getLlave() > this->par->getLlave()){//si el par es mayor entonces va a el lado derecho que se representa con un 1
+		lado=1; 
 	 }
-	 
+     
 	 if(lado==0 && izq){ 
 		 izq->insertar(par);//en caso de que el para sea menor llama recursivamente hasta encontrar un campo nulo (donde le corresponda) 
-	 }else if(!izq){//insertar en lado izquierdo		
+	 }else if(!izq && lado==0){//insertar en lado izquierdo		
 		 izq=new Nodo(par);//inserta de hijo izq el nuevo par 
 		 izq->color='N';//es una hoja por lo que es negra
 		 der=new Nodo(this->par);//de hijo derecho va a tener una copia de si mismo
@@ -57,7 +67,7 @@ void insertar(Par<T1,T2> * par){
 	 }else if(lado==1 && der){
 		 der->insertar(par);
 		 
-	 }else if(!der){//insertar en lado der
+	 }else if(!der && lado==1){//insertar en lado der
 		  der=new Nodo(par);//inserta de hijo der el nuevo par
 		  der->color='N';
 		  izq=new Nodo(this->par);//de hijo derecho va a tener una copia de si mismo (el padre)
@@ -74,11 +84,19 @@ void insertar(Par<T1,T2> * par){
  
  // Metodo que imprime el nodo Pre ORDEN
 ostream& imprimir(ostream& salida){
-	salida << (*(this->par)) << " ";
+    if(esHoja(*this)){
+       salida <<this->color<< (*(this->par))<< " ";
+    }else{
+    salida << this->color<< (this->par->getLlave())<< " "<<endl;
+
+    }
+
 	if(this->izq)		// Chequea si existe el hijo izquierdo
 	{
+
 		this->izq->imprimir(salida);
 	}
+
 	if(this->der)		// Chequea si existe el hijo derecho
 	{
 		this->der->imprimir(salida);
@@ -124,9 +142,8 @@ int tipoRotacion(Nodo * nodo, int lado){ //yo y mi lado
 /**
 */
 Nodo* esRN(Nodo* nodo){
-		
+        
 	if (nodo->izq!= 0){
-		
 		if(rojosSeguidos(nodo)){
 			buscarPadre(*nodo);
 			return nodo;
@@ -140,6 +157,7 @@ Nodo* esRN(Nodo* nodo){
 	
 	if (nodo->der!=0){
 		if(rojosSeguidos(nodo)){
+
 			buscarPadre(*nodo);
 			return nodo;
 		}else{ 
@@ -163,6 +181,7 @@ void buscarPadre(Nodo & hijo){
 	Nodo * aux=raiz;
 	padre= aux;
 	int donde=-1;
+	int donde1=-1;
 	while(aux->par->getLlave() !=  hijo.par->getLlave()){
             if(hijo.par > aux->par){
                 padre=aux;
@@ -190,7 +209,6 @@ void buscarPadre(Nodo & hijo){
 
 void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revisar
 //llama a colorFlip() en caso de que necesite y le pasa el puntero a nodo de donde esta el problema
-   cout<<"vere si hay Cflip"<<endl;
 	if (nodo->izq){
 			colorFlip(nodo);
 			hayCFlip(nodo->izq);
@@ -201,7 +219,6 @@ void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revis
 		hayCFlip(nodo->der);
 	}
 	 
-	cout<<"salii Cflip"<<endl; 
 }
 
 
@@ -209,11 +226,13 @@ void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revis
 /**
 */
 void rotacionSimple(Nodo * padre, int lado){
-	if(lado==0){//rotacion izquierda
-
+	if(lado==1){//rotacion izquierda
+      cout<<"rotare izquierda"<<endl;
 	//IZQUIERDA
 		padre->izq->der= new Nodo(padre->der->izq->par);
+        padre->izq->der->color='N';
 		padre->izq->izq=new Nodo(padre->izq->par);
+        padre->izq->izq->color='N';
 		padre->izq->par->setDato(0);//borra el dato de un nodo para que sea una llave
 		padre->par->setLlave(padre->der->par->getLlave());//asigna la llave del hijo al padre
 		Nodo * ptr= (padre->der->der);
@@ -226,9 +245,11 @@ void rotacionSimple(Nodo * padre, int lado){
 		
 		
 	}else{
+		cout<<"rotare derecha"<<endl;
 		padre->der->izq= new Nodo(padre->izq->der->par);
+		padre->der->izq->color='N';
 		padre->der->der = new Nodo(padre->der->par);
-		
+		padre->der->der->color='N';
 		padre->der->par->setDato(0);
 		padre->der->par->setLlave(padre->der->izq->par->getLlave());
 		
@@ -274,8 +295,8 @@ void recoloreo(Nodo * padre){
 /** metodo que cambia la raiz si esta es roja
 */
 void cambioRaiz(){
-	cout<<"cambiaree raiz"<<endl;
 	if(raiz->color=='R'){
+		cout<<"cambie raiz"<<endl;
 	raiz->color='N';
 	}
 }
@@ -283,28 +304,18 @@ void cambioRaiz(){
 /** metodo el cual si encuentra un nodo negro con dos hijos rojos, el nodo negro pasa a ser rojo y sus hijos negros
 */
 void colorFlip(Nodo * nodo){
-	cout<<"comprovaree Colorflip"<<endl; 
 	if(nodo->izq && nodo->der){
 		if(nodo->color=='N' && nodo->izq->color=='R' && nodo->der->color=='R'){
-		 
+		  cout<<"hice color flip"<<endl;
 	     	nodo->color='R';
 			nodo->izq->color='N';
 			nodo->der->color='N'; 
 	}
 	
 	}
-	cout<<"salii Colorflip"<<endl; 
 
 }
 
-int esHoja(Nodo & nodo){
-	if(nodo.der != 0 && nodo.izq != 0){
-		return 0;//no es hoja
-	}else{		
-		return 1;
-	}
-	
-}
 
 /** <<Revisar la raiz siempre y ver de que lado va el elemento a insertar>>
 Metodo que primeramente revisa si se debe realizar un cambio de raiz o color flip (si la raiz es diferente de null)
@@ -323,6 +334,7 @@ void insertar(Par<T1,T2> * par){
 	if(raiz){
 		cambioRaiz();
 		if(raiz->der && raiz->izq){
+			hayCFlip(raiz);
 			if(raiz->par->getLlave() > par->getLlave()){
 			hayCFlip(raiz->der);
 			lado=1;
@@ -335,16 +347,19 @@ void insertar(Par<T1,T2> * par){
 	
 		
 		raiz->insertar(par);
+		cout<<"insertar hoja"<<*par<<endl;
 		if(lado==1){
-			esRN(raiz->der);
-		}else if(lado==2){
 			esRN(raiz->izq);
+		}else if(lado==2){
+			esRN(raiz->der);
 		}
 		
 		
 		
 	}else{
-		raiz=new Nodo(par);	
+		cout<<"insertar hoja"<<*par<<endl;
+		raiz=new Nodo(par);
+		raiz->color='N';
 	}
 	
 }
