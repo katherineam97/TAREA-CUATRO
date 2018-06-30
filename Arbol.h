@@ -161,7 +161,7 @@ void buscarPadre(Nodo & hijo){
 	Nodo * aux=raiz;
 	padre= aux;
 	int donde=-1;
-	while(aux->par->getLlave() !=  hijo.par.getLlave()){
+	while(aux->par->getLlave() !=  hijo.par->getLlave()){
             if(hijo.par > aux->par){
                 padre=aux;
                 aux= aux->der;
@@ -174,10 +174,10 @@ void buscarPadre(Nodo & hijo){
     }
      //ya se cual es mi padre 
 	if(tipoRotacion(aux, donde)==1){
-		rotacionSimple();
+		rotacionSimple(padre, donde);
 		
 	}else{
-		rotacionDoble();
+		rotacionDoble(padre, donde);
 		
 	}
 	}
