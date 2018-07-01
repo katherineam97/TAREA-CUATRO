@@ -15,8 +15,7 @@ class Arbol{
 		char color;
 		Par<T1,T2> * par;
  Nodo(Par<T1,T2> * par){
- 	 Par<T1, T2> * copia= new Par<T1, T2>(par->getLlave(),par->getDato());
-	 this->par=copia;
+	 this->par=new Par<T1, T2>(par);
 	 izq=0;
 	 der=0;
 	 color='\0';
@@ -47,27 +46,32 @@ int esHoja(Nodo & nodo){
 }
 
 void insertar(Par<T1,T2> * par){
-		int lado=0;
+	/*	int lado=0;
 	 if(par->getLlave() > this->par->getLlave()){//si el par es mayor entonces va a el lado derecho que se representa con un 1
 		lado=1; 
-	 }
+	 }*/
      
-	 if(lado==0 && izq){ 
+	 if(!(par->getLlave() > this->par->getLlave()) && izq){ 
 		 izq->insertar(par);//en caso de que el para sea menor llama recursivamente hasta encontrar un campo nulo (donde le corresponda) 
-	 }else if(!izq && lado==0){//insertar en lado izquierdo		
-		 izq=new Nodo(par);//inserta de hijo izq el nuevo par 
+	 }else if(!izq && !(par->getLlave() > this->par->getLlave())){//insertar en lado izquierdo	
+		
+		 izq=new Nodo(par);//inserta de hijo izq el nuevo par
+			
 		 izq->color='N';//es una hoja por lo que es negra
 		 der=new Nodo(this->par);//de hijo derecho va a tener una copia de si mismo
+		
 		 der->color='N';//es una hoja por lo que es negra
 		 delete this->par;//el par del padre ahora va a ser el menor que en este caso fue le que recibio de param
 		 this->par=0;
 		 this->par = new Par<T1,T2>(par->getLlave(),0);
+		
 		 this->color='R';//el padre pasa a ser rojo
 		 
-	 }else if(lado==1 && der){
+	 }else if(par->getLlave() > this->par->getLlave() && der){
 		 der->insertar(par);
 		 
-	 }else if(!der && lado==1){//insertar en lado der
+	 }else if(!der && par->getLlave() > this->par->getLlave()){//insertar en lado der
+
 		  der=new Nodo(par);//inserta de hijo der el nuevo par
 		  der->color='N';
 		  izq=new Nodo(this->par);//de hijo derecho va a tener una copia de si mismo (el padre)
@@ -77,8 +81,7 @@ void insertar(Par<T1,T2> * par){
 		  //el padre va a quedar igual porque este va a ser el caso en el que el haya tenido el menor
 		 
 	 }
-	 
-	 
+	  
 	 
  }
  
@@ -157,7 +160,7 @@ Nodo* esRN(Nodo* nodo){
 	
 	if (nodo->der!=0){
 		if(rojosSeguidos(nodo)){
-
+	
 			buscarPadre(*nodo);
 			return nodo;
 		}else{ 
@@ -181,24 +184,31 @@ void buscarPadre(Nodo & hijo){
 	Nodo * aux=raiz;
 	padre= aux;
 	int donde=-1;
-	int donde1=-1;
+	
 	while(aux->par->getLlave() !=  hijo.par->getLlave()){
-            if(hijo.par > aux->par){
+		
+            if(hijo.par->getLlave() > aux->par->getLlave()){
                 padre=aux;
                 aux= aux->der;
+				
 				donde=1;
             } else{
                 padre=aux;
                 aux=aux->izq;
+				
                 donde=0;
             }
     }
+	
      //ya se cual es mi padre 
-	if(tipoRotacion(aux, donde)==1){
+	if(tipoRotacion(aux, donde)== 1){
+		
 		rotacionSimple(padre, donde);
 		
 	}else{
+		
 		rotacionDoble(padre, donde);
+		
 		
 	}
 	
@@ -244,6 +254,7 @@ void rotacionSimple(Nodo * padre, int lado){
 		//cout "Recoloreo" :arbol
 		
 		
+		
 	}else{
 		cout<<"rotare derecha"<<endl;
 		padre->der->izq= new Nodo(padre->izq->der->par);
@@ -263,6 +274,8 @@ void rotacionSimple(Nodo * padre, int lado){
 		recoloreo(padre);
 		//cout "Recoloreo" :arbol
 		
+
+		
 		
 	}
 	
@@ -272,14 +285,52 @@ void rotacionSimple(Nodo * padre, int lado){
 */
 void rotacionDoble(Nodo * padre, int lado){//yo izquierdo y mi hijo derecho rojo
 	
-	if(lado==0 && padre->der->color=='R'){
-		rotacionSimple(padre,1);
-		rotacionSimple(padre,0);
-		
-	}else if(lado==1 && padre->izq->color=='R'){
+	if(lado==0 && padre->izq->color=='R' && padre->izq->der->color=='R'){
+		cout<<"rotacion doble der"<<endl;
 		rotacionSimple(padre,0);
 		rotacionSimple(padre,1);
 		
+	}else if(lado==1 && padre->der->color=='R' && padre->der->izq->color=='R' ){
+		cout<<"entra rotacion doble izq"<<endl;
+		
+		cout<<"nuevos nodos: padre->izq->der "<<*padre->der->izq->izq->par<<endl;
+		
+		padre->izq->der=new Nodo(padre->der->izq->izq->par);
+		
+		
+		
+		padre->izq->izq=new Nodo(padre->izq->par);
+		
+		cout<<"nuevos nodos: padre->izq->izq "<<*padre->izq->par<<endl;
+		
+		padre->izq->par->setDato(0);
+		padre->izq->color='R';
+		cout<<"padre izq: "<<*padre->izq->par;
+		
+		Nodo * ptr=padre->der->izq;
+		cout<<"nuevo nodo: padre->der->izq "<<*ptr->der->izq->par;
+		
+		padre->der->izq = 0;
+		 
+		 cout<<"hijos ptr "<<*ptr->der->par;
+		padre->der->izq=new Nodo(ptr->der->par);
+		
+		
+		
+		padre->par->setLlave(ptr->par->getLlave());
+		padre->par->setDato(0);
+		cout<<"padre "<<*padre->par;
+		
+		cout<<"ptr "<<*ptr->par;
+		cout<<"hijos ptr "<<*ptr->der->par;
+		
+		
+		
+		/*padre->par->setLlave(ptr->par->getLlave());
+		padre->par->setDato(0);
+		cout<<"padre "<<*padre->par;*/
+		delete ptr;
+		ptr=0;
 	}
 	
 }
@@ -331,6 +382,8 @@ llama al insertar de nodo con el mismo, y finaliza revisando si el arbol quedo d
 
 void insertar(Par<T1,T2> * par){
 	int lado=0;
+	
+	
 	if(raiz){
 		cambioRaiz();
 		if(raiz->der && raiz->izq){
@@ -347,7 +400,7 @@ void insertar(Par<T1,T2> * par){
 	
 		
 		raiz->insertar(par);
-		cout<<"insertar hoja"<<*par<<endl;
+		cout<<"insertar hoja "<<*par<<endl;
 		if(lado==1){
 			esRN(raiz->izq);
 		}else if(lado==2){

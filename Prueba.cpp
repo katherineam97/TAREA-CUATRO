@@ -24,5 +24,14 @@ cout<<arbol<<endl<<endl;
 arbol.insertar(new Par<int,int>(350,7));
 cout<<arbol<<endl<<endl;
 
+arbol.insertar(new Par<int,int>(99,7));
+cout<<arbol<<endl<<endl;
+
+arbol.insertar(new Par<int,int>(90,7));
+cout<<arbol<<endl<<endl;
+
+//arbol.insertar(new Par<int,int>(6,7));
+//cout<<arbol<<endl<<endl;
+
 return 0;
 }
