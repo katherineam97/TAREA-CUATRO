@@ -286,49 +286,23 @@ void rotacionSimple(Nodo * padre, int lado){
 void rotacionDoble(Nodo * padre, int lado){//yo izquierdo y mi hijo derecho rojo
 	
 	if(lado==0 && padre->izq->color=='R' && padre->izq->der->color=='R'){
-		cout<<"rotacion doble der"<<endl;
+		
 		rotacionSimple(padre,0);
 		rotacionSimple(padre,1);
 		
 	}else if(lado==1 && padre->der->color=='R' && padre->der->izq->color=='R' ){
-		cout<<"entra rotacion doble izq"<<endl;
-		
-		cout<<"nuevos nodos: padre->izq->der "<<*padre->der->izq->izq->par<<endl;
 		
 		padre->izq->der=new Nodo(padre->der->izq->izq->par);
-		
-		
-		
+		padre->izq->der->color='N';
 		padre->izq->izq=new Nodo(padre->izq->par);
-		
-		cout<<"nuevos nodos: padre->izq->izq "<<*padre->izq->par<<endl;
-		
+		padre->izq->izq->color='N';
 		padre->izq->par->setDato(0);
 		padre->izq->color='R';
-		cout<<"padre izq: "<<*padre->izq->par;
-		
-		Nodo * ptr=padre->der->izq;
-		cout<<"nuevo nodo: padre->der->izq "<<*ptr->der->izq->par;
-		
-		padre->der->izq = 0;
-		 
-		 cout<<"hijos ptr "<<*ptr->der->par;
-		padre->der->izq=new Nodo(ptr->der->par);
-		
-		
-		
-		padre->par->setLlave(ptr->par->getLlave());
-		padre->par->setDato(0);
-		cout<<"padre "<<*padre->par;
-		
-		cout<<"ptr "<<*ptr->par;
-		cout<<"hijos ptr "<<*ptr->der->par;
-		
-		
-		
-		/*padre->par->setLlave(ptr->par->getLlave());
-		padre->par->setDato(0);
-		cout<<"padre "<<*padre->par;*/
+		padre->par->setLlave(padre->der->izq->par->getLlave());
+		Nodo * nuevo=new Nodo(padre->der->izq->der->par);
+		nuevo->color='N';
+		Nodo * ptr= padre->der->izq;
+		padre->der->izq=nuevo;
 		delete ptr;
 		ptr=0;
 	}
@@ -387,12 +361,12 @@ void insertar(Par<T1,T2> * par){
 	if(raiz){
 		cambioRaiz();
 		if(raiz->der && raiz->izq){
-			hayCFlip(raiz);
+			colorFlip(raiz);
 			if(raiz->par->getLlave() > par->getLlave()){
-			hayCFlip(raiz->der);
+			hayCFlip(raiz->izq);
 			lado=1;
 		}else{
-			hayCFlip(raiz->izq);
+			hayCFlip(raiz->der);
 			lado=2;
 		}
 
