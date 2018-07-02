@@ -1,14 +1,26 @@
-#include"Par.h"
-#include<iostream>
+#include "Arbol.h"
+#include "Par.h"
+#include <iostream>
+
 using namespace std;
 
 int main(){
 
-   Par<int,int> par(3,5);
-   Par<int,char> par2(3,'L');
-   
-   cout << par << endl;
-   cout << par2 << endl;
+  Arbol<char,char> arbol;
+
+arbol.insertar(new Par<char,char> ('c','t'));
+cout<<arbol<<endl<<endl;
+
+arbol.insertar(new Par<char,char> ('d','t'));
+cout<<arbol<<endl<<endl;
+
+arbol.insertar(new Par<char,char> ('a','y'));
+cout<<arbol<<endl<<endl;
+
+arbol.insertar(new Par<char,char> ('b','y'));
+cout<<arbol<<endl<<endl;
+
+
    
    return 0;	
 }
