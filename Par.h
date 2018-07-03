@@ -60,6 +60,9 @@ class Par {
 		  return entrada;
 	  }
 	  
+	  /** metodo sobrecargado que me dice si un par es mayor a otro
+	  @param par&
+	  */
 	 int operator > (const Par<T1,T2> & par){		 
 		  
 		  if(this->llave >= par.llave){
