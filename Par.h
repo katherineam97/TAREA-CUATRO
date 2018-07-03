@@ -93,12 +93,6 @@ class Par {
 			this->dato=dato;
 		}
 		
-		/**Metodo set que le asigna de a la llave del par lo que recibe de parametro
-		*/
-		void setLlave(T1 llave){
-			this->llave=llave;
-			
-		}	  
 	  
 };
 
