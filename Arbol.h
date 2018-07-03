@@ -1,7 +1,6 @@
 #ifndef _ARBOL
 #define _ARBOL
 #include "Par.h"
-#include <vector> // para el iterador
 #include <iostream>
 using namespace std;
 
@@ -53,6 +52,12 @@ int esHoja(Nodo & nodo){
 	
 }
 
+int equals(Nodo * nodo){
+	int x=(this->par->getLlave() == nodo->par->getLlave()) && (this->par->getDato() == nodo->par->getDato());
+	cout<<x<<"IGUALES";
+	return (this->par->getLlave() == nodo->par->getLlave()) && (this->par->getDato() == nodo->par->getDato());
+}
+
 
  /**Metodo insertar de nodo: comprueba si el par a insertar es mayor o menor y dependiendo a eso va recorriendo el arbol hasta "encontrar un lugar"
 Cuando encuentra un lugar, si la llave del par a insertar es menor entonces la llave de dicho par reemplazara el nodo que estaba
@@ -65,7 +70,7 @@ void insertar(Par<T1,T2> * par){
    
 	 if(!(*par > *(this->par)) && izq){ 
 		 izq->insertar(par);//en caso de que el para sea menor llama recursivamente hasta encontrar un campo nulo (donde le corresponda) 
-	 }else if(!izq && !(par->getLlave() > this->par->getLlave())){//insertar en lado izquierdo	
+	 }else if(!izq && !(*par > *(this->par))){//insertar en lado izquierdo	
 		
 		 izq=new Nodo(par);//inserta de hijo izq el nuevo par
 			
@@ -79,10 +84,10 @@ void insertar(Par<T1,T2> * par){
 		
 		 this->color='R';//el padre pasa a ser rojo
 		 
-	 }else if(par->getLlave() > this->par->getLlave() && der){
+	 }else if(*par > *(this->par) && der){
 		 der->insertar(par);
 		 
-	 }else if(!der && par->getLlave() > this->par->getLlave()){//insertar en lado der
+	 }else if(!der && *par > *(this->par)){//insertar en lado der
 
 		  der=new Nodo(par);//inserta de hijo der el nuevo par
 		  der->color='N';
@@ -126,6 +131,7 @@ ostream& imprimir(ostream& salida){
 	 
 	//Atributos privados de arbol 
 	 Nodo * padre;
+	 Nodo * abuelo;
 	 Nodo * raiz;
 	
 public:
@@ -217,6 +223,30 @@ dependiendo a lo que retorne se invocara al metodo de rotacionSimple o al metodo
  @param Nodo&
 
 */
+Nodo * buscarAbuelo(Nodo & padre){
+	Nodo * aux=raiz;
+	abuelo= aux;
+	
+	
+	while(aux->par->getLlave() !=  padre.par->getLlave()){
+		
+            if(*(padre.par) > *(aux->par)){
+                abuelo=aux;
+                aux= aux->der;
+			
+            } else{
+                abuelo=aux;
+                aux=aux->izq;
+				
+           
+            }
+			
+    }
+	return aux;
+}
+
+
+
 void buscarPadre(Nodo & hijo){
 	Nodo * aux=raiz;
 	padre= aux;
@@ -224,7 +254,7 @@ void buscarPadre(Nodo & hijo){
 	
 	while(aux->par->getLlave() !=  hijo.par->getLlave()){
 		
-            if(hijo.par->getLlave() > aux->par->getLlave()){
+            if(*(hijo.par) > *(aux->par)){
                 padre=aux;
                 aux= aux->der;
 				
@@ -239,12 +269,15 @@ void buscarPadre(Nodo & hijo){
 	
      //ya se cual es mi padre 
 	if(tipoRotacion(aux, donde)== 1){
-		
-		rotacionSimple(padre, donde);
+		if(raiz->equals(padre)){
+			rotacionSimple(padre, donde, 0);
+		}else{
+			rotacionSimple(buscarAbuelo(*padre), donde, 1);
+		}
 		
 	}else{
 		
-		rotacionDoble(padre, donde);
+		rotacionDoble(buscarAbuelo(*padre), donde);
 		
 		
 	}
@@ -261,15 +294,15 @@ void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revis
 			colorFlip(nodo);
 			hayCFlip(nodo->izq);
 	}
+	 
+
 
 	if (nodo->der){
 		colorFlip(nodo);
 		hayCFlip(nodo->der);
-	}
-	 
+		}
+
 }
-
-
 
 /**Metodo que dependiendo al numero que recibe identificara si se debe realizar una rotacion simple izquierda o una rotacion simple derecha
 A partir del Nodo * padre que recibe (es apartir de aqui en donde se realizaran los cambios) se haran los cambios necesarios en los nodos (se reacomodara) para equilibrar el arbol
@@ -277,23 +310,29 @@ El Padre "adoptara" el hijo negro de su primer hijo rojo y despues el padre se c
  @param Nodo* , int
  
 */
-void rotacionSimple(Nodo * padre, int lado){
+void rotacionSimple(Nodo * abuelo, int lado, int hayAbu){
 	if(lado==1){//rotacion izquierda
       cout<<"Rotacion izquierda"<<endl;
 	//IZQUIERDA
-		padre->izq->der= new Nodo(padre->der->izq->par);
-        padre->izq->der->color='N';
-		padre->izq->izq=new Nodo(padre->izq->par);
-        padre->izq->izq->color='N';
-		padre->izq->par->setDato(0);//borra el dato de un nodo para que sea una llave
-		padre->par->setLlave(padre->der->par->getLlave());//asigna la llave del hijo al padre
-		Nodo * ptr= (padre->der->der);
-		padre->der->der=0;
-		delete padre->der;//  
-		padre->der= ptr;
-
-		recoloreo(padre);
-	
+	if(hayAbu){
+		Nodo * ptr2= abuelo;
+		Nodo *ptr1=abuelo->der;
+		Nodo *ptr=abuelo->der->der;
+		ptr1->der=0;
+		ptr1->der=ptr->izq;
+		ptr->izq=0;
+		ptr->izq=ptr1;
+		ptr2->der=0;
+		ptr2->der=ptr;
+	    recoloreo(ptr);
+	}else{
+		Nodo * ptr1=abuelo;
+		Nodo * ptr=abuelo->der;
+		ptr1->der=0;
+		ptr1->der= ptr->izq;
+		ptr->izq=0;
+		ptr->izq=ptr1;
+	}
 		
 	}else{
 		cout<<"Rotacion derecha"<<endl;
@@ -421,7 +460,7 @@ void insertar(Par<T1,T2> * par){
 		cambioRaiz();
 		if(raiz->der && raiz->izq){
 			colorFlip(raiz);
-			if(raiz->par->getLlave() > par->getLlave()){
+			if(*(raiz->par) > *(par)){
 			hayCFlip(raiz->izq);
 			lado=1;
 		}else{

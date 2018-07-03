@@ -6,19 +6,12 @@ using namespace std;
 
 int main(){
 
-  Arbol<char,char> arbol;
-
-arbol.insertar(new Par<char,char> ('c','t'));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<char,char> ('d','t'));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<char,char> ('a','y'));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<char,char> ('b','y'));
-cout<<arbol<<endl<<endl;
+  Arbol<int,char> arbol;
+  
+for(int i=1; i<10; ++i){
+	arbol.insertar(new Par<int,char> (i,'c'));
+	cout<<arbol<<endl<<endl;	
+}
 
 
    
