@@ -53,8 +53,7 @@ int esHoja(Nodo & nodo){
 }
 
 int equals(Nodo * nodo){
-	int x=(this->par->getLlave() == nodo->par->getLlave()) && (this->par->getDato() == nodo->par->getDato());
-	cout<<x<<"IGUALES";
+
 	return (this->par->getLlave() == nodo->par->getLlave()) && (this->par->getDato() == nodo->par->getDato());
 }
 
@@ -242,7 +241,7 @@ Nodo * buscarAbuelo(Nodo & padre){
             }
 			
     }
-	return aux;
+	return abuelo;
 }
 
 
@@ -277,7 +276,11 @@ void buscarPadre(Nodo & hijo){
 		
 	}else{
 		
-		rotacionDoble(buscarAbuelo(*padre), donde);
+		if(raiz->equals(padre)){
+			rotacionDoble(padre, donde, 0);
+		}else{
+			rotacionDoble(buscarAbuelo(*padre), donde, 1);
+		}
 		
 		
 	}
@@ -315,6 +318,7 @@ void rotacionSimple(Nodo * abuelo, int lado, int hayAbu){
       cout<<"Rotacion izquierda"<<endl;
 	//IZQUIERDA
 	if(hayAbu){
+		cout<<"abuelo"<<*abuelo->par<<endl;
 		Nodo * ptr2= abuelo;
 		Nodo *ptr1=abuelo->der;
 		Nodo *ptr=abuelo->der->der;
@@ -332,25 +336,32 @@ void rotacionSimple(Nodo * abuelo, int lado, int hayAbu){
 		ptr1->der= ptr->izq;
 		ptr->izq=0;
 		ptr->izq=ptr1;
+		raiz=ptr;
+		recoloreo(ptr);
 	}
 		
 	}else{
-		cout<<"Rotacion derecha"<<endl;
-		padre->der->izq= new Nodo(padre->izq->der->par);
-		padre->der->izq->color='N';
-		padre->der->der = new Nodo(padre->der->par);
-		padre->der->der->color='N';
-		padre->der->par->setDato(0);
-		padre->der->par->setLlave(padre->der->izq->par->getLlave());
-		
-		padre->par->setLlave(padre->izq->par->getLlave());
-		
-		Nodo * ptr = (padre->izq->izq);
-		padre->izq->izq=0;
-		delete padre->izq;
-		padre->izq= ptr;
-
-		recoloreo(padre);
+		if(hayAbu){
+		Nodo * ptr2= abuelo;
+		Nodo *ptr1=abuelo->izq;
+		Nodo *ptr=abuelo->izq->izq;
+		ptr1->izq=0;
+		ptr1->izq=ptr->der;
+		ptr->der=0;
+		ptr->der=ptr1;
+		ptr2->izq=0;
+		ptr2->izq=ptr;
+	    recoloreo(ptr);
+	}else{
+		Nodo * ptr1=abuelo;
+		Nodo * ptr=abuelo->izq;
+		ptr1->izq=0;
+		ptr1->izq= ptr->der;
+		ptr->der=0;
+		ptr->der=ptr1;
+		raiz=ptr;
+		recoloreo(ptr);
+	}
 			
 	}
 	
@@ -363,51 +374,80 @@ despues el papa tomara el valor del segundo rojo
  @param Nodo *,int
  
 */
-void rotacionDoble(Nodo * padre, int lado){//yo izquierdo y mi hijo derecho rojo
+void rotacionDoble(Nodo * abuelo, int lado, int hayAbu){//yo izquierdo y mi hijo derecho rojo
 	
-	if(lado==0 && padre->izq->color=='R' && padre->izq->der->color=='R'){
+	if(lado==0 && abuelo->der->izq->color=='R' && abuelo->der->izq->der->color=='R'){
 		cout<<"Rotacion Doble Derecha"<<endl;
-		padre->der->izq=new Nodo(padre->izq->der->der->par);
-		padre->der->izq->color='N';
-		padre->der->der=new Nodo(padre->der->par);
-		padre->der->der->color='N';
-		padre->der->par->setLlave(padre->par->getLlave());
-		padre->der->color='N';
-		padre->der->par->setDato(0);
+		if(hayAbu){
+			Nodo * ptr3=abuelo;
+			Nodo * ptr2=abuelo->der;
+			Nodo * ptr1=abuelo->der->izq;
+			Nodo * ptr=abuelo->der->izq->der;
+			ptr2->izq=0;
+			ptr2->izq=ptr->der;
+			ptr->der=0;
+			ptr1->der=0;
+			ptr1->der=ptr->izq;
+			ptr->izq=0;
+			ptr->der=ptr2;
+			ptr->izq=ptr1;
+			ptr3->der=0;
+			ptr3->der=ptr;
+			recoloreo(ptr);
+	}else{
+		Nodo * ptr2= abuelo;
+		Nodo * ptr1= abuelo->izq;
+		Nodo * ptr= abuelo->izq->der;
+		ptr2->izq=0;
+		ptr2->izq= ptr->der;
+		ptr->der=0;
+		ptr1->der=0;
+		ptr1->der=ptr->izq;
+		ptr->izq=0;
+		ptr->der=ptr2;
+		ptr->izq=ptr1;
+		raiz=ptr;
+		recoloreo(raiz);
 		
-		Nodo * ptr=padre->izq->der;
-		padre->par->setLlave(padre->izq->der->par->getLlave());
-		padre->color='R';
+	}
 		
-		padre->izq->der=0;
-		padre->izq->der=new Nodo(ptr->izq->par);
-		padre->izq->der->color='N';
 		
-		delete ptr;
-		ptr=0;
-		
-		recoloreo(padre);
-		
-	}else if(lado==1 && padre->der->color=='R' && padre->der->izq->color=='R' ){
+	}else if(lado==1 && abuelo->izq->der->color=='R' && abuelo->izq->der->izq->color=='R' ){
 		cout<<"Rotacion Doble Izquierda"<<endl;
-		padre->izq->der=new Nodo(padre->der->izq->izq->par);
-		padre->izq->der->color='N';
-		padre->izq->izq=new Nodo(padre->izq->par);
-		padre->izq->izq->color='N';
-		padre->izq->par->setDato(0);
+		if(hayAbu){
+			
+			Nodo * ptr3=abuelo;
+			Nodo * ptr2=abuelo->izq;
+			Nodo * ptr1=abuelo->izq->der;
+			Nodo * ptr=abuelo->izq->der->izq;
+			ptr2->der=0;
+			ptr2->der=ptr->izq;
+			ptr->izq=0;
+			ptr1->izq=0;
+			ptr1->izq=ptr->der;
+			ptr->der=0;
+			ptr->izq=ptr2;
+			ptr->der=ptr1;
+			ptr3->izq=0;
+			ptr3->izq=ptr;
+			recoloreo(ptr);
 		
-		padre->izq->color='N'; //aqui
-		padre->color='R'; //aqui
+	}else{
+		Nodo * ptr2= abuelo;
+		Nodo * ptr1= abuelo->der;
+		Nodo * ptr= abuelo->der->izq;
+		ptr2->der=0;
+		ptr2->der= ptr->izq;
+		ptr->izq=0;
+		ptr1->izq=0;
+		ptr1->izq=ptr->der;
+		ptr->der=0;
+		ptr->izq=ptr2;
+		ptr->der=ptr1;
+		raiz=ptr;
+		recoloreo(raiz);
+	}
 		
-		padre->par->setLlave(padre->der->izq->par->getLlave());
-		Nodo * nuevo=new Nodo(padre->der->izq->der->par);
-		nuevo->color='N';
-		Nodo * ptr= padre->der->izq;
-		padre->der->izq=nuevo;
-		delete ptr;
-		ptr=0;
-		
-		recoloreo(padre); //aqui
 	}
 	
 }
