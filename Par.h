@@ -2,10 +2,11 @@
 #define PAR_EMPLANTILLADO
 #include<iostream>
 #include <string>
+#include"ParMayor.h"
 using namespace std;
 template< class T1, class T2 >
 /**Clase  de plantilla*/
-class Par {
+class Par : public ParMayor{
 	
 /** Metodo que imprime el par, se sobrecarga el operator <<
  @param ostream&,Par<T1,T2>
