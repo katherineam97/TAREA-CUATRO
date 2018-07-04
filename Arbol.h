@@ -500,12 +500,9 @@ void insertar(const char * archivo){
    string s2="";
    int tamano=0;
    entrada>>tamano;
-   entrada>>s1;
-   entrada>>s2;
    Par<T1, T2> * par; 
-   par= new Par<T1,T2>(s1, s2);
-
-   for(int i =0; i<tamano-1;++i){
+   par= new Par<T1,T2>();
+   for(int i =0; i<tamano;++i){
      entrada>>par;
      this->insertar(par);
    }

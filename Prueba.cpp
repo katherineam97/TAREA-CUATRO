@@ -4,8 +4,7 @@
 using namespace std;
 int main(int argc, char **argv){
 
-Arbol<int,char> arbol;
-
+Arbol<int,int> arbol;
 arbol.insertar(argv[1]);
 cout<<arbol<<endl<<endl;
 
