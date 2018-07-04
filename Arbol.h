@@ -2,10 +2,12 @@
 #define _ARBOL
 #include "Par.h"
 #include <iostream>
+#include <fstream>
+#include <string>
 using namespace std;
 
 template< class T1, class T2 >
-class Arbol{
+class Arbol {
 	private:
 	//Atributos privados de Arbol
 	 class Nodo{
@@ -130,6 +132,7 @@ ostream& imprimir(ostream& salida){
 	 
 	//Atributos privados de arbol 
 	 Nodo * padre;
+	 Nodo * abuelo;
 	 Nodo * raiz;
 	
 public:
@@ -216,13 +219,14 @@ int rojosSeguidos(Nodo* nodo){
 
 
 /**Metodo que busca el padre del nodo que recibe de parametro
-@param Nodo&
-@return Nodo*
+Cuando se llama este metodo ya se sabe que hay un problema que necesita de algun tipo de rotacion por lo que este llama al metodo tipoRotacion() que 
+dependiendo a lo que retorne se invocara al metodo de rotacionSimple o al metodo de rotacionDoble
+ @param Nodo&
 
 */
 Nodo * buscarAbuelo(Nodo & padre){
 	Nodo * aux=raiz;
-	Nodo * abuelo= aux;
+	abuelo= aux;
 	
 	
 	while(aux->par->getLlave() !=  padre.par->getLlave()){
@@ -243,12 +247,7 @@ Nodo * buscarAbuelo(Nodo & padre){
 }
 
 
-/**Metodo que busca el padre del nodo que recibe de parametro
-Cuando se llama este metodo ya se sabe que hay un problema que necesita de algun tipo de rotacion por lo que este llama al metodo tipoRotacion() que 
-dependiendo a lo que retorne se invocara al metodo de rotacionSimple o al metodo de rotacionDoble
- @param Nodo&
 
-*/
 void buscarPadre(Nodo & hijo){
 	Nodo * aux=raiz;
 	padre= aux;
@@ -311,10 +310,9 @@ void hayCFlip(Nodo * nodo){//se de puntero que indica que indica el lado a revis
 }
 
 /**Metodo que dependiendo al numero que recibe identificara si se debe realizar una rotacion simple izquierda o una rotacion simple derecha
-A partir del Nodo * abuelo que recibe (es apartir de aqui en donde se realizaran los cambios) se haran los cambios necesarios en los nodos (se reacomodara) para equilibrar el arbol
-El abuelo "adoptara" el hijo negro del segundo nodo rojo(uno de los hijos de su hijo) y abuelo se convertira en el nuevo hijo del padre
-cada rotacion simple esta dividida en dos casos cada una ya que si no existe un abuelo quiere decir que la raiz es igual al padre, sino todos los otros tendran algun abuelo
- @param Nodo* , int , int
+A partir del Nodo * padre que recibe (es apartir de aqui en donde se realizaran los cambios) se haran los cambios necesarios en los nodos (se reacomodara) para equilibrar el arbol
+El Padre "adoptara" el hijo negro de su primer hijo rojo y despues el padre se convertira entonces en el hijo del primer rojo (tomara el lado del hijo que se le dio)
+ @param Nodo* , int
  
 */
 void rotacionSimple(Nodo * abuelo, int lado, int hayAbu){
@@ -373,9 +371,10 @@ void rotacionSimple(Nodo * abuelo, int lado, int hayAbu){
 
 /**Metodo que se llama despues de reconocer que hay dos rojos seguidos en zig-zag 
 Empezara a realizar los cambios a partir del nodo padre que recibe de parametro 
-el segundo rojo le cede uno de sus hijos a su padre y otro a su abuelo y despues ese segundo rojo se convierte en el nuevo padre 
- cada rotacion doble esta dividida en dos casos cada una ya que si no existe un abuelo quiere decir que la raiz es igual al padre, sino todos los otros tendran algun abuelo
- @param Nodo* , int , int
+El segundo rojo encontrado (de los rojos seguidos) le cedera uno de sus hijos al padre (padre del primer rojo) y el otro al primer nodo rojo
+despues el papa tomara el valor del segundo rojo 
+ @param Nodo *,int
+ 
 */
 void rotacionDoble(Nodo * abuelo, int lado, int hayAbu){//yo izquierdo y mi hijo derecho rojo
 	
@@ -494,6 +493,24 @@ Metodo que primeramente revisa si se debe realizar un cambio de raiz o color fli
 posteriormente llama al insertar de nodo con el mismo, y finaliza revisando si el arbol quedo de tipo rojo negro para relizar las siguientes modificaciones al no serlo (rotaciones)
  @param par 
 */
+
+void insertar(const char * archivo){
+   fstream entrada(archivo);
+   string  s1="";
+   string s2="";
+   int tamano=0;
+   entrada>>tamano;
+   entrada>>s1;
+   entrada>>s2;
+   Par<T1, T2> * par; 
+   par= new Par<T1,T2>(s1, s2);
+
+   for(int i =0; i<tamano-1;++i){
+     entrada>>par;
+     this->insertar(par);
+   }
+}
+
 
 void insertar(Par<T1,T2> * par){
 	int lado=0;

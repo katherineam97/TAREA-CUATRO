@@ -2,36 +2,12 @@
 #include "Par.h"
 #include <iostream>
 using namespace std;
-int main(){
+int main(int argc, char **argv){
 
-Arbol<int,int> arbol;
+Arbol<int,char> arbol;
 
-arbol.insertar(new Par<int,int>(100,1));
+arbol.insertar(argv[1]);
 cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<int,int>(160,3));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<int,int>(300,3));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<int,int>(20,3));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<int,int>(500,3));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<int,int>(350,7));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<int,int>(99,7));
-cout<<arbol<<endl<<endl;
-
-arbol.insertar(new Par<int,int>(90,7));
-cout<<arbol<<endl<<endl;
-
-//arbol.insertar(new Par<int,int>(6,7));
-//cout<<arbol<<endl<<endl;
 
 return 0;
 }

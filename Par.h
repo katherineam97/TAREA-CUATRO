@@ -2,11 +2,10 @@
 #define PAR_EMPLANTILLADO
 #include<iostream>
 #include <string>
-#include"ParMayor.h"
 using namespace std;
 template< class T1, class T2 >
 /**Clase  de plantilla*/
-class Par : public ParMayor{
+class Par {
 	
 /** Metodo que imprime el par, se sobrecarga el operator <<
  @param ostream&,Par<T1,T2>
@@ -33,10 +32,64 @@ class Par : public ParMayor{
 	  T2 dato;
 	  
 	public:
+	Par<T1,T2>(string tipo1,  string tipo2){
+        if(((tipo1=="int")==0)&&((tipo2=="int")==0)){
+            llave=0;
+            dato=0;
+        }else if(((tipo1=="int")==0)&&((tipo2=="char")==0)){
+            llave=0;
+            dato='\0';
+        } else if(((tipo1=="int")==0)&&((tipo2=="double")==0)){
+            llave=0;
+            dato=0.0;
+        }else if(((tipo1=="int")==0)&&((tipo2=="string")==0)){
+            llave=0;
+            dato="\0";
+        } else if(((tipo1=="double")==0)&&((tipo2=="int")==0)){
+            llave=0.0;
+            dato=0;
+        }else if(((tipo1=="double")==0)&&((tipo2=="char")==0)){
+            llave=0.0;
+            dato='\0';
+        } else if(((tipo1=="double")==0)&&((tipo2=="double")==0)){
+            llave=0.0;
+            dato=0.0;
+        }else if(((tipo1=="double")==0)&&((tipo2=="string")==0)){
+            llave=0.0;
+            dato="\0";
+        }else if(((tipo1=="char")==0)&&((tipo2=="int")==0)){
+            llave='\0';
+            dato=0;
+        }else if(((tipo1=="char")==0)&&((tipo2=="char")==0)){
+            llave='\0';
+            dato='\0';
+        } else if(((tipo1=="char")==0)&&((tipo2=="double")==0)){
+            llave='\0';
+            dato=0.0;
+        }else if(((tipo1=="char")==0)&&((tipo2=="string")==0)){
+            llave='\0';
+            dato="\0";
+        }else if(((tipo1=="string")==0)&&((tipo2=="int")==0)){
+            llave="\0";
+            dato=0;
+        }else if(((tipo1=="string")==0)&&((tipo2=="char")==0)){
+            llave="\0";
+            dato='\0';
+        } else if(((tipo1=="string")==0)&&((tipo2=="double")==0)){
+            llave="\0";
+            dato=0.0;
+        }else if(((tipo1=="string")==0)&&((tipo2=="string")==0)){
+            llave="\0";
+            dato="\0";
+        }
+
+		}
+        
 	
 	/**Metodo constructor con parametros
 	@param T1,T2
 	*/
+
 	  Par(T1 llave, T2 dato){
 		this->llave = llave;
         this->dato = dato;		  
@@ -61,9 +114,6 @@ class Par : public ParMayor{
 		  return entrada;
 	  }
 	  
-	  /** metodo sobrecargado que me dice si un par es mayor a otro
-	  @param par&
-	  */
 	 int operator > (const Par<T1,T2> & par){		 
 		  
 		  if(this->llave >= par.llave){
@@ -97,6 +147,12 @@ class Par : public ParMayor{
 			this->dato=dato;
 		}
 		
+		/**Metodo set que le asigna de a la llave del par lo que recibe de parametro
+		*/
+		void setLlave(T1 llave){
+			this->llave=llave;
+			
+		}	  
 	  
 };
 
